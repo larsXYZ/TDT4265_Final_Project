@@ -1,0 +1,49 @@
+import random
+import gym
+import numpy as np
+import tensorflow as tf
+from collections import deque
+
+
+class Agent(object):
+
+    #Initialize the agent
+    def __init__(self, number_of_states, number_of_actions):
+        self.number_of_states = number_of_states
+        self.number_of_actions = number_of_actions
+        self.learning_rate = 0.001
+        self.memory = deque()
+        self.gamma = 0.95 #Discount rate
+        self.epsilon = 1.0 #Exploration rate
+        self.model = self.create_model()
+
+    #Create the model, the brain of the agent
+    def create_model(self):
+        model = tf.keras.models.Sequential()
+        model.add(tf.keras.layers.Dense(output_dim=10, input_dim=self.number_of_states, activation='relu'))
+        model.add(tf.keras.layers.Dense(output_dim=10, activation='relu'))
+        model.add(tf.keras.layers.Dense(output_dim=self.number_of_actions, activation='relu'))
+        model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
+
+        return model
+
+    #Store stuff for later learning
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done))
+
+    #Decide what to do depending on the current state
+    def act(self, state):
+        if random.random() < self.epsilon: #Explore
+            return random.randrange(self.number_of_actions)
+        else: #Greedy
+            return self.model.predict(x=state)
+
+
+    def replay(self):
+        raise NotImplementedError
+
+    def load(self, filename):
+        raise NotImplementedError
+
+    def save(self, filename):
+        raise NotImplementedError

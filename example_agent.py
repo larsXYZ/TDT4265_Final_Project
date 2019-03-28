@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from collections import deque
 
-
+#SOURCE https://keon.io/deep-q-learning/
 EPISODES = 1000
 
 class DQNAgent:
@@ -30,7 +30,7 @@ class DQNAgent:
                       optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
 
-    def remember(self, state, action, reward, next_state, done):
+    def remember(self):
         self.memory.append((state, action, reward, next_state, done))
 
     def act(self, state):
