@@ -30,7 +30,7 @@ class DQNAgent:
                       optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
 
-    def remember(self):
+    def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
     def act(self, state):
