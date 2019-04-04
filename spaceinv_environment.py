@@ -1,40 +1,41 @@
 import gym
 import numpy as np
 import cv2
-import tensorflow as tf
-#import matplotlib.pyplot as plt
-from collections import deque
-#import fully_connected_agent as agent
 import CNN_agent as agent
 
 EPISODES = 1000
 
 #Resizes the image to 84x84 and outputs a binary color image
 def preprocessing(observation):
-    observation = cv2.resize(observation, (32,32))
+    observation = cv2.resize(observation, (84,84))
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
-    return np.reshape(observation, (32,32,1))
+
+    #Slicing to remove unused screen for space invader, becomes 69,84
+    observation = observation[10:79, 0:84]
+
+    return np.reshape(observation, (69,84,1))
 
 if __name__ == "__main__":
     env = gym.make('SpaceInvaders-v0')
-    state_size = (32,32,1)
+    state_size = (69,84)
     action_size = env.action_space.n
     agent = agent.Agent(state_size, action_size)
-    # agent.load("./save/cartpole-dqn.h5")
     done = False
-    batch_size = 32
+    batch_size = 10
 
     for e in range(EPISODES):
         state = env.reset()
         state = preprocessing(state)
-        for time in range(500):
-            env.render()
+        total_reward = 0
+        for time in range(999999999):
+
+            #env.render()
             action = agent.act(state)
             next_state, reward, done, _ = env.step(action)
-            #print(time, reward)
+            total_reward += reward
+            if time % 20 == 0: print("Episode:", e,", Frame:", time, ", Total score:",total_reward, ", Action:", action, ", Memory size:", len(agent.memory), ", Epsilon:", agent.epsilon)
 
-            reward = reward if not done else -10
             next_state = state = preprocessing(next_state)
             agent.remember(state, action, reward, next_state, done)
             state = next_state
@@ -44,5 +45,3 @@ if __name__ == "__main__":
                 break
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
-        # if e % 10 == 0:
-        #     agent.save("./save/cartpole-dqn.h5")
