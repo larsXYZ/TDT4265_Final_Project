@@ -17,13 +17,15 @@ def preprocessing(observation):
     return np.reshape(observation, (69,84,1))
 
 if __name__ == "__main__":
+    save = input("Do you want to save your weights (y/n)\n")
+
     env = gym.make('SpaceInvaders-v0')
     state_size = (69,84)
     action_size = env.action_space.n
     agent = agent.Agent(state_size, action_size)
+    agent.load("./weights/spaceinv_weights.h5")
     done = False
     batch_size = 10
-
     for e in range(EPISODES):
         state = env.reset()
         state = preprocessing(state)
@@ -45,3 +47,5 @@ if __name__ == "__main__":
                 break
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
+        if save == 'y':
+            agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )

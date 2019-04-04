@@ -23,8 +23,11 @@ class Agent(object):
 
         model = tf.keras.models.Sequential()
         model.add(tf.keras.layers.Conv2D(filters=10, kernel_size=3, activation='relu', input_shape=(self.state_size[0],self.state_size[1],1)))
+        model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Conv2D(filters=5, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Conv2D(filters=5, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Flatten())
         model.add(tf.keras.layers.Dense(units=10, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='relu'))
@@ -75,7 +78,7 @@ class Agent(object):
                 self.epsilon *= self.epsilon_decay
 
     def load(self, filename):
-        raise NotImplementedError
+        self.model.load_weights(filename)
 
     def save(self, filename):
-        raise NotImplementedError
+        self.model.save_weights(filename)
