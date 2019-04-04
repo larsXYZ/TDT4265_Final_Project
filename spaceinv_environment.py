@@ -18,7 +18,8 @@ def preprocessing(observation):
 
 if __name__ == "__main__":
     env = gym.make('SpaceInvaders-v0')
-    state_size = env.observation_space.shape[0]
+    print(env.observation_space)
+    state_size = (84,84,1)
     print(state_size)
     action_size = env.action_space.n
     print(action_size)
@@ -29,7 +30,7 @@ if __name__ == "__main__":
 
     for e in range(EPISODES):
         state = env.reset()
-        state = np.reshape(state, [1, state_size])
+        state = preprocessing(state)
         for time in range(500):
             #env.render()
             action = agent.act(state)
@@ -37,7 +38,7 @@ if __name__ == "__main__":
             #print(time, reward)
 
             reward = reward if not done else -10
-            next_state = np.reshape(next_state, [1, state_size])
+            next_state = state = preprocessing(next_state)
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             if done:

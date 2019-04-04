@@ -25,6 +25,7 @@ class Agent(object):
         model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu', input_shape=(84,84,1)))  
         model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu'))
         model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu'))
+        model.add(tf.keras.layers.Flatten())
         model.add(tf.keras.layers.Dense(units=20, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='relu'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
@@ -37,10 +38,15 @@ class Agent(object):
 
     #Decide what to do depending on the current state
     def act(self, state):
+
+        state = state.reshape(1,84,84,1)
+
         if random.random() < self.epsilon: #Explore
             return random.randrange(self.number_of_actions)
         else: #Greedy
-            return np.argmax(self.model.predict(x=state))
+            action_scores = self.model.predict(x=state)
+            best_action = np.argmax(action_scores)
+            return best_action
 
     def replay(self, batch_size):
 
@@ -48,11 +54,12 @@ class Agent(object):
 
         for sample in batch:
 
-            state = sample[0]
+            state = (sample[0]).reshape(1,84,84,1)
             action = sample[1]
             reward = sample[2]
-            next_state = sample[3]
+            next_state = (sample[3]).reshape(1,84,84,1)
             done = sample[4]
+
 
             y = reward
 
