@@ -8,7 +8,7 @@ class Agent(object):
 
     #Initialize the agent
     def __init__(self, number_of_states, number_of_actions):
-        self.number_of_states = number_of_states
+        self.state_size = (32,32)
         self.number_of_actions = number_of_actions
         self.learning_rate = 0.001
         self.memory = deque()
@@ -22,7 +22,7 @@ class Agent(object):
     def create_model(self):
 
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu', input_shape=(84,84,1)))  
+        model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu', input_shape=(self.state_size[0],self.state_size[1],1)))
         model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu'))
         model.add(tf.keras.layers.Conv2D(filters=30, kernel_size=2, activation='relu'))
         model.add(tf.keras.layers.Flatten())
@@ -39,7 +39,7 @@ class Agent(object):
     #Decide what to do depending on the current state
     def act(self, state):
 
-        state = state.reshape(1,84,84,1)
+        state = state.reshape(1,self.state_size[0],self.state_size[1],1)
 
         if random.random() < self.epsilon: #Explore
             return random.randrange(self.number_of_actions)
@@ -54,10 +54,10 @@ class Agent(object):
 
         for sample in batch:
 
-            state = (sample[0]).reshape(1,84,84,1)
+            state = (sample[0]).reshape(1,self.state_size[0],self.state_size[1],1)
             action = sample[1]
             reward = sample[2]
-            next_state = (sample[3]).reshape(1,84,84,1)
+            next_state = (sample[3]).reshape(1,self.state_size[0],self.state_size[1],1)
             done = sample[4]
 
 
