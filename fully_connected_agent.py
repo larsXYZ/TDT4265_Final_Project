@@ -11,19 +11,19 @@ class Agent(object):
         self.number_of_states = number_of_states
         self.number_of_actions = number_of_actions
         self.learning_rate = 0.001
-        self.memory = deque()
+        self.memory = deque(maxlen=2000)
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.999
+        self.epsilon_decay = 0.99
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
     def create_model(self):
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Dense(units=20, input_dim=self.number_of_states, activation='relu'))
-        model.add(tf.keras.layers.Dense(units=20, activation='relu'))
-        model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=100, input_dim=self.number_of_states, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=100, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
 
         return model
@@ -61,8 +61,8 @@ class Agent(object):
 
             self.model.fit(state, y_pred, epochs=1, verbose=0)
 
-            if self.epsilon > self.epsilon_min:
-                self.epsilon *= self.epsilon_decay
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon_decay
 
     def load(self, filename):
         raise NotImplementedError

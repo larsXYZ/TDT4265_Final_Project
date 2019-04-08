@@ -23,19 +23,21 @@ if __name__ == "__main__":
         state = env.reset()
         state = np.reshape(state, [1, state_size])
         for time in range(500):
+
             #env.render()
             action = agent.act(state)
-            next_state, reward, done, _ = env.step(action)
 
-            #Giving the agent more points if it stays near the center
-            reward += 0.2/( 1 + abs(state[0][0]))
+            next_state, reward, done, _ = env.step(action)
 
             #print(time, reward)
 
             reward = reward if not done else -10
             next_state = np.reshape(next_state, [1, state_size])
+
             agent.remember(state, action, reward, next_state, done)
+
             state = next_state
+
             if done:
                 print("episode: {}/{}, score: {}, e: {:.2}"
                       .format(e, EPISODES, time, agent.epsilon))
