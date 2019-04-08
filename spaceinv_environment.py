@@ -33,7 +33,7 @@ class Image_buffer(object):
             print("BUFFER OTHER THAN EXPECTED")
             exit(1)
 
-EPISODES = 50
+EPISODES = 1000
 
 #Resizes the image to 84x84 and outputs a binary color image
 def preprocessing(observation):
@@ -41,10 +41,7 @@ def preprocessing(observation):
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
 
-    #Slicing to remove unused screen for space invader, becomes 69,84
-    observation = observation[10:79, 0:84]
-
-    return np.reshape(observation, (69,84,1))
+    return np.reshape(observation, (84,84,1))
 
 if __name__ == "__main__":
 
@@ -55,11 +52,11 @@ if __name__ == "__main__":
         score_storage = np.zeros(EPISODES)
 
         #Image buffer, enabling the agent to achieve a sense of time
-        BUFFER_SIZE = 2
+        BUFFER_SIZE = 3
         image_buffer = Image_buffer(size=BUFFER_SIZE)
 
         env = gym.make('SpaceInvaders-v0')
-        state_size = (69,84)
+        state_size = (84,84)
         action_size = env.action_space.n
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
         #agent.load("./weights/spaceinv_weights.h5")
