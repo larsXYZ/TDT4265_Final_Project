@@ -23,14 +23,11 @@ class Agent(object):
     def create_model(self):
 
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(filters=10, kernel_size=3, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
-        model.add(tf.keras.layers.BatchNormalization())
-        model.add(tf.keras.layers.Conv2D(filters=5, kernel_size=3, activation='relu'))
-        model.add(tf.keras.layers.BatchNormalization())
-        model.add(tf.keras.layers.Conv2D(filters=5, kernel_size=3, activation='relu'))
-        model.add(tf.keras.layers.BatchNormalization())
+        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
+        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu'))
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=10, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=30, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='relu'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
 
