@@ -2,6 +2,7 @@ import gym
 import numpy as np
 import cv2
 import CNN_agent as agent
+import pickle
 import sys
 #import matplotlib.pyplot as plt
 
@@ -46,7 +47,8 @@ def preprocessing(observation):
 if __name__ == "__main__":
 
     try:
-        save = input("Do you want to save your weights (y/n)\n")
+        save = input("Do you want to save your weights? (y/n)\n")
+        load = input("Do you want to load saved weights and memory? (y/n)\n")
 
         #Score storage
         score_storage = np.zeros(EPISODES)
@@ -59,7 +61,11 @@ if __name__ == "__main__":
         state_size = (84,84)
         action_size = env.action_space.n
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
-        #agent.load("./weights/spaceinv_weights.h5")
+
+        if load == "y":
+            agent.load("./weights/spaceinv_weights.h5")
+            agent.memory = pickle.load(open("agent_memory.p", 'rb'))
+
         done = False
         batch_size = 10
 
@@ -95,18 +101,24 @@ if __name__ == "__main__":
                     break
                 if len(agent.memory) > batch_size:
                     agent.replay(batch_size)
+                pickle.dump(agent.memory, open("agent_memory.p", "wb"))
             if save == 'y' and e % 20 == 0:
                 agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )
+                pickle.dump(agent.memory, open("agent_memory_e" + str(e) + ".p", "wb"))
+
     except KeyboardInterrupt:
+        print("EXCEPTION")
         if save == 'y':
             agent.save("./weights/spaceinv_weights.h5")
             np.save("score_storage", score_storage)
-            print("saved file")
+            pickle.dump(agent.memory, open("agent_memory.p", "wb"))
+            print("Data saved")
         sys.exit()
 
 
     #Saving and plotting result
     agent.save("./weights/spaceinv_weights.h5")
+    pickle.dump(agent.memory, open("agent_memory.p", "wb"))
     np.save("score_storage", score_storage)
     plt.plot( np.arange(1,EPISODES+1),score_storage)
     plt.show()
