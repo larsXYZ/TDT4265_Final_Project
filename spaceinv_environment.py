@@ -34,6 +34,9 @@ class Image_buffer(object):
             print("BUFFER OTHER THAN EXPECTED")
             exit(1)
 
+    def reset(self):
+        self.buffer = []
+
 #Resizes the image to 84x84 and outputs a binary color image
 def preprocessing(observation):
     observation = cv2.resize(observation, (84,84))
@@ -57,21 +60,26 @@ if __name__ == "__main__":
         BUFFER_SIZE = 3
         image_buffer = Image_buffer(size=BUFFER_SIZE)
 
+        #Preparing environment
         env = gym.make('SpaceInvaders-v0')
         state_size = (84,84)
         action_size = env.action_space.n
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
+        #Continuing previous run
         if load == "y":
-            agent.load("./weights/spaceinv_weights.h5")
+            agent.load("./weights/spaceinv_weights_final.h5")
             agent.memory = pickle.load(open("cnn_agent_memory.p", 'rb'))
 
         done = False
         batch_size = 10
 
         for e in range(EPISODES):
+
+            #Preparing for next run
             state = env.reset()
             state = preprocessing(state)
+            image_buffer.reset()
             image_buffer.append(state)
 
             total_reward = 0
@@ -79,29 +87,42 @@ if __name__ == "__main__":
 
                 #env.render()
 
+                #Agent performs an action
                 action = agent.act(image_buffer.get_image_array())
+
+                #The environment is stepped forward
                 next_state, reward, done, _ = env.step(action)
                 total_reward += reward
+
+                #Printing information
                 if time % 20 == 0: print("Episode:", e,", Frame:", time, ", Total score:",total_reward, ", Action:", action, ", Memory size:", len(agent.memory), ", Epsilon:", agent.epsilon)
 
+                #Prepare next state
                 next_state = state = preprocessing(next_state)
 
                 #Recording for memories
-                state_old = image_buffer.get_image_array()
+                state_previous = image_buffer.get_image_array()
                 image_buffer.append(next_state)
-                state_new = image_buffer.get_image_array()
+                state_resulting = image_buffer.get_image_array()
 
+                #Agent remembers
                 agent.remember(state_old, action, reward, state_new, done)
 
+                #Update next state
                 state = next_state
+
+
                 if done:
                     print("episode: {}/{}, score: {}, e: {:.2}"
                           .format(e, EPISODES, total_reward, agent.epsilon))
                     score_storage[e] = total_reward
+                    pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
                     break
                 if len(agent.memory) > batch_size:
                     agent.replay(batch_size)
-                pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
+
+
+
             if save == 'y' and e % 20 == 0:
                 agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )
                 pickle.dump(agent.memory, open("cnn_agent_memory_e" + str(e) + ".p", "wb"))
@@ -109,7 +130,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("EXCEPTION")
         if save == 'y':
-            agent.save("./weights/spaceinv_weights.h5")
+            agent.save("./weights/spaceinv_weights_final.h5")
             np.save("spaceinv_score_storage", score_storage)
             pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
             print("Data saved")
