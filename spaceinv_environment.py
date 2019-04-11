@@ -5,37 +5,8 @@ import CNN_agent as agent
 import pickle
 import sys
 import matplotlib.pyplot as plt
-
-#Image buffer class
-class Image_buffer(object):
-    def __init__(self, size):
-        self.image_x = -1
-        self.image_y = -1
-        self.size = size
-        self.buffer = []
-
-    def append(self, image):
-        if len(self.buffer) == self.size:
-            self.buffer.pop(0)
-            self.append(image)
-        elif len(self.buffer) < self.size:
-            while len(self.buffer) < self.size:
-                self.image_x = np.shape(image)[0]
-                self.image_y = np.shape(image)[1]
-                self.buffer.append(image)
-        else:
-            print("BUFFER OTHER THAN EXPECTED")
-            exit(1)
-
-    def get_image_array(self):
-        if len(self.buffer) == self.size:
-            return np.array(self.buffer).reshape(1,self.image_x, self.image_y, self.size)
-        else:
-            print("BUFFER OTHER THAN EXPECTED")
-            exit(1)
-
-    def reset(self):
-        self.buffer = []
+import best_agent_tracker
+import image_buffer
 
 #Resizes the image to 84x84 and outputs a binary color image
 def preprocessing(observation):
@@ -56,9 +27,12 @@ if __name__ == "__main__":
         #Score storage
         score_storage = np.zeros(EPISODES)
 
+        #Keeps track of best agent
+        tracker = best_agent_tracker.Best_Agent_tracker()
+
         #Image buffer, enabling the agent to achieve a sense of time
         BUFFER_SIZE = 3
-        image_buffer = Image_buffer(size=BUFFER_SIZE)
+        img_buffer = image_buffer.Image_buffer(size=BUFFER_SIZE)
 
         #Preparing environment
         env = gym.make('SpaceInvaders-v0')
@@ -79,8 +53,8 @@ if __name__ == "__main__":
             #Preparing for next run
             state = env.reset()
             state = preprocessing(state)
-            image_buffer.reset()
-            image_buffer.append(state)
+            img_buffer.reset()
+            img_buffer.append(state)
 
             total_reward = 0
             for time in range(999999999):
@@ -88,7 +62,7 @@ if __name__ == "__main__":
                 #env.render()
 
                 #Agent performs an action
-                action = agent.act(image_buffer.get_image_array())
+                action = agent.act(img_buffer.get_image_array())
 
                 #The environment is stepped forward
                 next_state, reward, done, _ = env.step(action)
@@ -101,22 +75,27 @@ if __name__ == "__main__":
                 next_state = state = preprocessing(next_state)
 
                 #Recording for memories
-                state_previous = image_buffer.get_image_array()
-                image_buffer.append(next_state)
-                state_resulting = image_buffer.get_image_array()
+                state_previous = img_buffer.get_image_array()
+                img_buffer.append(next_state)
+                state_resulting = img_buffer.get_image_array()
 
                 #Agent remembers
-                agent.remember(state_old, action, reward, state_new, done)
+                agent.remember(state_previous, action, reward, state_resulting, done)
 
                 #Update next state
                 state = next_state
 
 
                 if done:
-                    print("episode: {}/{}, score: {}, e: {:.2}"
-                          .format(e, EPISODES, total_reward, agent.epsilon))
+                    print("episode: {}/{}, score: {}, e: {:.2}".format(e, EPISODES, total_reward, agent.epsilon))
+
                     score_storage[e] = total_reward
+
                     pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
+
+                    # Checks if this agent is best agent yet
+                    tracker.update_best_agent(agent, time)
+
                     break
                 if len(agent.memory) > batch_size:
                     agent.replay(batch_size)
