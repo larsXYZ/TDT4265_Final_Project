@@ -4,7 +4,7 @@ import cv2
 import CNN_agent as agent
 import pickle
 import sys
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 #Image buffer class
 class Image_buffer(object):
@@ -34,8 +34,6 @@ class Image_buffer(object):
             print("BUFFER OTHER THAN EXPECTED")
             exit(1)
 
-EPISODES = 1000
-
 #Resizes the image to 84x84 and outputs a binary color image
 def preprocessing(observation):
     observation = cv2.resize(observation, (84,84))
@@ -43,6 +41,8 @@ def preprocessing(observation):
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
 
     return np.reshape(observation, (84,84,1))
+
+EPISODES = 1000
 
 if __name__ == "__main__":
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
         if load == "y":
             agent.load("./weights/spaceinv_weights.h5")
-            agent.memory = pickle.load(open("agent_memory.p", 'rb'))
+            agent.memory = pickle.load(open("cnn_agent_memory.p", 'rb'))
 
         done = False
         batch_size = 10
@@ -101,24 +101,24 @@ if __name__ == "__main__":
                     break
                 if len(agent.memory) > batch_size:
                     agent.replay(batch_size)
-                pickle.dump(agent.memory, open("agent_memory.p", "wb"))
+                pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
             if save == 'y' and e % 20 == 0:
                 agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )
-                pickle.dump(agent.memory, open("agent_memory_e" + str(e) + ".p", "wb"))
+                pickle.dump(agent.memory, open("cnn_agent_memory_e" + str(e) + ".p", "wb"))
 
     except KeyboardInterrupt:
         print("EXCEPTION")
         if save == 'y':
             agent.save("./weights/spaceinv_weights.h5")
-            np.save("score_storage", score_storage)
-            pickle.dump(agent.memory, open("agent_memory.p", "wb"))
+            np.save("spaceinv_score_storage", score_storage)
+            pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
             print("Data saved")
         sys.exit()
 
 
     #Saving and plotting result
-    agent.save("./weights/spaceinv_weights.h5")
-    pickle.dump(agent.memory, open("agent_memory.p", "wb"))
-    np.save("score_storage", score_storage)
+    agent.save("./weights/spaceinv_weights_final.h5")
+    pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
+    np.save("spaceinv_score_storage", score_storage)
     plt.plot( np.arange(1,EPISODES+1),score_storage)
     plt.show()

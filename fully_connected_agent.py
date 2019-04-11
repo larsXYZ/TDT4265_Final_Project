@@ -65,7 +65,7 @@ class Agent(object):
             self.epsilon *= self.epsilon_decay
 
     def load(self, filename):
-        raise NotImplementedError
+        self.model.load_weights(filename)
 
     def save(self, filename):
-        raise NotImplementedError
+        self.model.save_weights(filename)
