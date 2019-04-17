@@ -16,7 +16,7 @@ def preprocessing(observation):
 
     return np.reshape(observation, (84,84,1))
 
-EPISODES = 1000
+EPISODES = 500
 
 if __name__ == "__main__":
 
@@ -104,6 +104,7 @@ if __name__ == "__main__":
 
             if save == 'y' and e % 20 == 0:
                 agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )
+                tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
                 pickle.dump(agent.memory, open("cnn_agent_memory_e" + str(e) + ".p", "wb"))
 
     except KeyboardInterrupt:
@@ -111,6 +112,7 @@ if __name__ == "__main__":
         if save == 'y':
             agent.save("./weights/spaceinv_weights_final.h5")
             np.save("spaceinv_score_storage", score_storage)
+            tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
             pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
             print("Data saved")
         sys.exit()
@@ -118,6 +120,7 @@ if __name__ == "__main__":
 
     #Saving and plotting result
     agent.save("./weights/spaceinv_weights_final.h5")
+    tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
     pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
     np.save("spaceinv_score_storage", score_storage)
     plt.plot( np.arange(1,EPISODES+1),score_storage)

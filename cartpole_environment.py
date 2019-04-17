@@ -62,6 +62,7 @@ if __name__ == "__main__":
                 #Saving weights
                 if save == 'y' and e % 20 == 0:
                     agent.save("./weights/cartpole_weights_e" + str(e) + '.h5')
+                    tracker.get_best_agent().save("./weights/cartpole_weights_best.h5")
 
                 # Checks if this agent is best agent yet
                 tracker.update_best_agent(agent, time)

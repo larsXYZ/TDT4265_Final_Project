@@ -15,7 +15,7 @@ class Agent(object):
         self.memory = deque()
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
-        self.epsilon_min = 0.01
+        self.epsilon_min = 0.05
         self.epsilon_decay = 0.99999
         self.model = self.create_model()
 
