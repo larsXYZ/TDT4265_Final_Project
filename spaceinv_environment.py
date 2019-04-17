@@ -124,4 +124,4 @@ if __name__ == "__main__":
     pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
     np.save("spaceinv_score_storage", score_storage)
     plt.plot( np.arange(1,EPISODES+1),score_storage)
-    plt.show()
+    plt.savefig("cnn_agent_plot")
