@@ -94,7 +94,7 @@ if __name__ == "__main__":
                     pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
 
                     # Checks if this agent is best agent yet
-                    tracker.update_best_agent(agent, time)
+                    tracker.update_best_agent(agent, total_reward)
 
                     break
                 if len(agent.memory) > batch_size:
