@@ -69,7 +69,7 @@ if __name__ == "__main__":
                 total_reward += reward
 
                 #Printing information
-                if time % 20 == 0: print("Episode:", e,", Frame:", time, ", Total score:",total_reward, ", Action:", action, ", Memory size:", len(agent.memory), ", Epsilon:", agent.epsilon)
+                #if time % 20 == 0: print("Episode:", e,", Frame:", time, ", Total score:",total_reward, ", Action:", action, ", Memory size:", len(agent.memory), ", Epsilon:", agent.epsilon)
 
                 #Prepare next state
                 next_state = state = preprocessing(next_state)
@@ -102,10 +102,9 @@ if __name__ == "__main__":
 
 
 
-            if save == 'y' and e % 20 == 0:
-                agent.save("./weights/spaceinv_weights_e" + str(e) + '.h5' )
+            if save == 'y' and e % 10 == 0:
+                agent.save("./weights/spaceinv_weights_e" + str(e) + ".h5" )
                 tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
-                pickle.dump(agent.memory, open("cnn_agent_memory_e" + str(e) + ".p", "wb"))
 
     except KeyboardInterrupt:
         print("EXCEPTION")
@@ -113,7 +112,7 @@ if __name__ == "__main__":
             agent.save("./weights/spaceinv_weights_final.h5")
             np.save("spaceinv_score_storage", score_storage)
             tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
-            pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
+            #pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
             print("Data saved")
         sys.exit()
 
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     #Saving and plotting result
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
-    pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
+    #pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
     np.save("spaceinv_score_storage", score_storage)
     plt.plot( np.arange(1,EPISODES+1),score_storage)
     plt.savefig("cnn_agent_plot")
