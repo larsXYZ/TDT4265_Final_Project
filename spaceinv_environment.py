@@ -13,8 +13,23 @@ def preprocessing(observation):
     observation = cv2.resize(observation, (84,84))
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
-
     return np.reshape(observation, (84,84,1))
+
+def autosave(agent, score_storage, tracker, e):
+    agent.save("./autosave/spaceinv_weights.h5")
+    np.save("./autosave/spaceinv_score_storage", score_storage)
+    pickle.dump(agent.memory, open("./autosave/spaceinv_memory.p", "wb"))
+    pickle.dump(tracker, open("./autosave/spaceinv_tracker.p", "wb"))
+    pickle.dump(e, open("./autosave/spaceinv_episode_count.p", "wb"))
+    print("Autosave")
+
+def autoload(agent, score_storage, tracker):
+    agent.load("./autosave/spaceinv_weights.h5")
+    score_storage = np.copy(np.load("./autosave/spaceinv_score_storage.npy"))
+    agent.memory = pickle.load(open("./autosave/spaceinv_memory.p", 'rb'))
+    tracker = pickle.load(open("./autosave/spaceinv_tracker.p", "rb"))
+    print("Autoload")
+    return pickle.load(open("./autosave/spaceinv_episode_count.p", "rb"))
 
 EPISODES = 500
 
@@ -38,28 +53,27 @@ if __name__ == "__main__":
         env = gym.make('SpaceInvaders-v0')
         state_size = (84,84)
         action_size = env.action_space.n
+        batch_size = 10
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
-        #Continuing previous run
+        #Loading autosave
+        e = 0
         if load == "y":
-            agent.load("./weights/spaceinv_weights_final.h5")
-            agent.memory = pickle.load(open("cnn_agent_memory.p", 'rb'))
+            e = autoload(agent, score_storage, tracker)
 
-        done = False
-        batch_size = 10
-
-        for e in range(EPISODES):
+        while e < EPISODES:
 
             #Preparing for next run
             state = env.reset()
             state = preprocessing(state)
+            done = False
             img_buffer.reset()
             img_buffer.append(state)
 
             total_reward = 0
             for time in range(999999999):
 
-                #env.render()
+                env.render()
 
                 #Agent performs an action
                 action = agent.act(img_buffer.get_image_array())
@@ -67,9 +81,6 @@ if __name__ == "__main__":
                 #The environment is stepped forward
                 next_state, reward, done, _ = env.step(action)
                 total_reward += reward
-
-                #Printing information
-                #if time % 20 == 0: print("Episode:", e,", Frame:", time, ", Total score:",total_reward, ", Action:", action, ", Memory size:", len(agent.memory), ", Epsilon:", agent.epsilon)
 
                 #Prepare next state
                 next_state = state = preprocessing(next_state)
@@ -85,42 +96,36 @@ if __name__ == "__main__":
                 #Update next state
                 state = next_state
 
-
                 if done:
                     print("episode: {}/{}, score: {}, e: {:.2}".format(e, EPISODES, total_reward, agent.epsilon))
-
                     score_storage[e] = total_reward
-
-                    pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
-
-                    # Checks if this agent is best agent yet
-                    tracker.update_best_agent(agent, total_reward)
-
+                    tracker.update_best_agent(agent, total_reward) # Checks if this agent is best agent yet
                     break
+
+
                 if len(agent.memory) > batch_size:
                     agent.replay(batch_size)
-
-
 
             if save == 'y' and e % 10 == 0:
                 agent.save("./weights/spaceinv_weights_e" + str(e) + ".h5" )
                 tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
+                autosave(agent, score_storage, tracker, e)
+
+            e += 1
+
+
 
     except KeyboardInterrupt:
         print("EXCEPTION")
         if save == 'y':
-            agent.save("./weights/spaceinv_weights_final.h5")
-            np.save("spaceinv_score_storage", score_storage)
             tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
-            #pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
-            print("Data saved")
+            autosave(agent, score_storage, tracker, e)
         sys.exit()
 
 
     #Saving and plotting result
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
-    #pickle.dump(agent.memory, open("cnn_agent_memory.p", "wb"))
-    np.save("spaceinv_score_storage", score_storage)
+    autosave(agent, score_storage, tracker, e)
     plt.plot( np.arange(1,EPISODES+1),score_storage)
     plt.savefig("cnn_agent_plot")
