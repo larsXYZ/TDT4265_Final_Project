@@ -11,7 +11,7 @@ class Agent(object):
         self.buffer_size = buffer_size
         self.state_size = number_of_states
         self.number_of_actions = number_of_actions
-        self.learning_rate = 0.0001
+        self.learning_rate = 0.01
         self.memory = deque(maxlen=200000)
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
@@ -23,9 +23,9 @@ class Agent(object):
     def create_model(self):
 
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
-        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu'))
-        model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=3, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
+        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=3, activation='relu'))
         model.add(tf.keras.layers.Flatten())
         model.add(tf.keras.layers.Dense(units=30, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
