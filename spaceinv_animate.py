@@ -28,7 +28,7 @@ if __name__ == "__main__":
     agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
     #Loading weights
-    weight_file_name = "spaceinv_weights_e490.h5"
+    weight_file_name = "spaceinv_weights_e0.h5"
     try:
         agent.load("./animate/"+weight_file_name)
     except:
@@ -43,7 +43,9 @@ if __name__ == "__main__":
     img_buffer.append(state)
 
     # Video file generator
-    videoGen = video_generator.VideoGenerator(24, 210, 160, 3)
+    output_video_filename = "test_vid"
+    videoGenRGB = video_generator.VideoGenerator(24, 210, 160, 3)
+    videoGenAgentView = video_generator.VideoGenerator(24, 84, 84, 1)
 
     while not done:
 
@@ -56,7 +58,8 @@ if __name__ == "__main__":
         next_state, reward, done, _ = env.step(action)
 
         #Storing video
-        videoGen.append_frame(next_state)
+        videoGenRGB.append_frame(next_state)
+        videoGenAgentView.append_frame(preprocessing(next_state))
 
         # Prepare next state
         next_state = state = preprocessing(next_state)
@@ -64,4 +67,5 @@ if __name__ == "__main__":
         # Append image buffer
         img_buffer.append(next_state)
 
-    videoGen.generate_video("test_vid",)
+    videoGenRGB.generate_video(output_video_filename+"-RGB",)
+    videoGenAgentView.generate_video(output_video_filename+"-AGENT")

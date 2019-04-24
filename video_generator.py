@@ -30,11 +30,15 @@ class VideoGenerator(object):
 
             frame = np.array(self.frame_array[i])
 
-            #Swapping Red and Blue channels
-            temp = np.copy(frame[:,:,0])
-            frame[:,:,0] = frame[:,:,2]
-            frame[:, :, 2] = temp
+            #Swapping Red and Blue channels or cloning them
+            if self.color_depth > 1:
+                temp = np.copy(frame[:,:,0])
+                frame[:,:,0] = frame[:,:,2]
+                frame[:, :, 2] = temp
+            else:
+                frame = np.repeat(frame[:, :, np.newaxis], 3, axis=2)
 
+            frame = np.squeeze(frame)
 
             video.write(frame)
 
