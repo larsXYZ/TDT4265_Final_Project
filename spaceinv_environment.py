@@ -4,7 +4,7 @@ import cv2
 import CNN_agent as agent
 import pickle
 import sys
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import best_agent_tracker
 import image_buffer
 
@@ -32,7 +32,7 @@ def autoload(agent, score_storage, tracker):
     print("Autoload, started at episode:", e)
     return e
 
-EPISODES = 1000
+EPISODES = 300
 
 if __name__ == "__main__":
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         env = gym.make('SpaceInvaders-v0')
         state_size = (84,84)
         action_size = env.action_space.n
-        batch_size = 30
+        batch_size = 10
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
         #Loading autosave
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
 
 
-    except: 
+    except:
         print("EXCEPTION")
         if save == 'y':
             tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
     autosave(agent, score_storage, tracker, e)
-    plt.plot( np.arange(1,EPISODES+1),score_storage)
-    plt.savefig("cnn_agent_plot")
+    #plt.plot( np.arange(1,EPISODES+1),score_storage)
+    #plt.savefig("cnn_agent_plot")
