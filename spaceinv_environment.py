@@ -19,7 +19,7 @@ def autosave(agent, score_storage, tracker, e):
     agent.save("./autosave/spaceinv_weights.h5")
     np.save("./autosave/spaceinv_score_storage", score_storage)
     pickle.dump(agent.memory, open("./autosave/spaceinv_memory.p", "wb"))
-    pickle.dump(tracker, open("./autosave/spaceinv_tracker.p", "wb"))
+    #pickle.dump(tracker, open("./autosave/spaceinv_tracker.p", "wb"))
     pickle.dump(e, open("./autosave/spaceinv_episode_count.p", "wb"))
     print("Autosave")
 
@@ -27,11 +27,12 @@ def autoload(agent, score_storage, tracker):
     agent.load("./autosave/spaceinv_weights.h5")
     score_storage = np.copy(np.load("./autosave/spaceinv_score_storage.npy"))
     agent.memory = pickle.load(open("./autosave/spaceinv_memory.p", 'rb'))
-    tracker = pickle.load(open("./autosave/spaceinv_tracker.p", "rb"))
-    print("Autoload")
-    return pickle.load(open("./autosave/spaceinv_episode_count.p", "rb"))
+    #tracker = pickle.load(open("./autosave/spaceinv_tracker.p", "rb"))
+    e = pickle.load(open("./autosave/spaceinv_episode_count.p", "rb"))
+    print("Autoload, started at episode:", e)
+    return e
 
-EPISODES = 500
+EPISODES = 1000
 
 if __name__ == "__main__":
 
@@ -53,7 +54,7 @@ if __name__ == "__main__":
         env = gym.make('SpaceInvaders-v0')
         state_size = (84,84)
         action_size = env.action_space.n
-        batch_size = 10
+        batch_size = 30
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
         #Loading autosave
@@ -73,7 +74,7 @@ if __name__ == "__main__":
             total_reward = 0
             for time in range(999999999):
 
-                env.render()
+                #env.render()
 
                 #Agent performs an action
                 action = agent.act(img_buffer.get_image_array())
@@ -115,7 +116,7 @@ if __name__ == "__main__":
 
 
 
-    except KeyboardInterrupt:
+    except: 
         print("EXCEPTION")
         if save == 'y':
             tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
