@@ -21,7 +21,7 @@ if __name__ == "__main__":
     #Loading weights
     weight_file_name = "cartpole_weights_best.h5"
     try:
-        agent.load(weight_file_name)
+        agent.load("./animate/"+weight_file_name)
     except:
         print("LOADING-ERROR")
         exit(1)
