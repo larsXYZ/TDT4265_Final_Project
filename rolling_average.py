@@ -20,4 +20,4 @@ plt.plot(np.arange(1, EPISODES + 1), score_storage)
 plt.show()
 
 plt.plot(np.arange(1, EPISODES + 2 - n), score_storage_roll_av)
-plt.show() 
+plt.show()
