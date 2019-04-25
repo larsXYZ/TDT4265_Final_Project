@@ -57,10 +57,7 @@ if __name__ == "__main__":
         state = env.reset()
         state = np.reshape(state, [1, state_size])
 
-        for time in range(1000):
-
-            if e % 10 == 0:
-                env.render()
+        for time in range(100000):
 
             #Agents performs action
             action = agent.act(state)
