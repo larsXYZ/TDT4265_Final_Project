@@ -26,6 +26,9 @@ if __name__ == "__main__":
         print("LOADING-ERROR")
         exit(1)
 
+    # We don't want the agent to explore when we test its performance
+    agent.epsilon = 0
+
     #Prepares for run
     state = env.reset()
 

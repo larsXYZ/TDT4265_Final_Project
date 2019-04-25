@@ -7,12 +7,28 @@ import pickle
 import best_agent_tracker
 
 #SOURCE https://keon.io/deep-q-learning/
-EPISODES = 100
+EPISODES = 1000
+
+def autosave(agent, score_storage, tracker, e):
+    agent.save("./autosave/cartpole_weights.h5")
+    np.save("./autosave/cartpole_score_storage", score_storage)
+    pickle.dump(agent.memory, open("./autosave/cartpole_memory.p", "wb"))
+    pickle.dump(e, open("./autosave/cartpole_episode_count.p", "wb"))
+    print("Autosave")
+
+def autoload(agent, score_storage, tracker):
+    agent.load("./autosave/cartpole_weights.h5")
+    score_storage = np.copy(np.load("./autosave/cartpole_score_storage.npy"))
+    agent.memory = pickle.load(open("./autosave/cartpole_memory.p", 'rb'))
+    e = pickle.load(open("./autosave/cartpole_episode_count.p", "rb"))
+    print("Autoload, started at episode:", e)
+    return e
 
 if __name__ == "__main__":
 
     #Do we save the weights?
     save = input("Do you want to save your weights and score? (y/n)\n")
+    load = input("Do you want to load saved weights and memory? (y/n)\n")
 
     #Defines environment
     env = gym.make('CartPole-v1')
@@ -30,7 +46,12 @@ if __name__ == "__main__":
     # Score storage
     score_storage = np.zeros(EPISODES)
 
-    for e in range(EPISODES):
+    # Loading autosave
+    e = 0
+    if load == "y":
+        e = autoload(agent, score_storage, tracker)
+
+    while e < EPISODES:
 
         #Prepares for next run
         state = env.reset()
@@ -38,7 +59,8 @@ if __name__ == "__main__":
 
         for time in range(1000):
 
-            #env.render()
+            if e % 10 == 0:
+                env.render()
 
             #Agents performs action
             action = agent.act(state)
@@ -60,9 +82,9 @@ if __name__ == "__main__":
                 score_storage[e] = time
 
                 #Saving weights
-                if save == 'y' and e % 20 == 0:
+                if save == 'y' and e % 10 == 0:
                     agent.save("./weights/cartpole_weights_e" + str(e) + '.h5')
-                    tracker.get_best_agent().save("./weights/cartpole_weights_best.h5")
+                    autosave(agent, score_storage, tracker, e)
 
                 # Checks if this agent is best agent yet
                 tracker.update_best_agent(agent, time)
@@ -73,11 +95,15 @@ if __name__ == "__main__":
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
 
+
+        e += 1
+
     #Creates plot and saves agent
     if save == 'y':
         agent.save("./weights/cartpole_weights_final.h5")
-        np.save("cartpole_score_storage", score_storage)
         tracker.get_best_agent().save("./weights/cartpole_weights_best.h5")
+        autosave(agent, score_storage, tracker, e)
+
 
     plt.plot( np.arange(1,EPISODES+1),score_storage)
-    plt.show()
+    plt.savefig("fnn_agent_plot")
