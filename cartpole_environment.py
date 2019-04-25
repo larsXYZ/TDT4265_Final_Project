@@ -37,7 +37,7 @@ if __name__ == "__main__":
     done = False
 
     #Defines agent
-    agent = agent.Agenxt(state_size, action_size)
+    agent = agent.Agent(state_size, action_size)
     batch_size = 32
 
     #Defines best agent tracker
