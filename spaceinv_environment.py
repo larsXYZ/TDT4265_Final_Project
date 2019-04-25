@@ -23,14 +23,14 @@ def autosave(agent, score_storage, tracker, e):
     pickle.dump(e, open("./autosave/spaceinv_episode_count.p", "wb"))
     print("Autosave")
 
-def autoload(agent, score_storage, tracker):
+def autoload(agent, tracker):
     agent.load("./autosave/spaceinv_weights.h5")
     score_storage = np.copy(np.load("./autosave/spaceinv_score_storage.npy"))
     agent.memory = pickle.load(open("./autosave/spaceinv_memory.p", 'rb'))
     #tracker = pickle.load(open("./autosave/spaceinv_tracker.p", "rb"))
     e = pickle.load(open("./autosave/spaceinv_episode_count.p", "rb"))
     print("Autoload, started at episode:", e)
-    return e
+    return e, score_storage
 
 EPISODES = 300
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         #Loading autosave
         e = 0
         if load == "y":
-            e = autoload(agent, score_storage, tracker)
+            e, score_storage = autoload(agent, tracker)
 
         while e < EPISODES:
 
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
     autosave(agent, score_storage, tracker, e)
-    #plt.plot( np.arange(1,EPISODES+1),score_storage)
-    #plt.savefig("cnn_agent_plot")
+    plt.plot( np.arange(1,EPISODES+1),score_storage)
+    plt.savefig("cnn_agent_plot")

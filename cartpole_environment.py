@@ -7,7 +7,7 @@ import pickle
 import best_agent_tracker
 
 #SOURCE https://keon.io/deep-q-learning/
-EPISODES = 1000
+EPISODES = 20
 
 def autosave(agent, score_storage, tracker, e):
     agent.save("./autosave/cartpole_weights.h5")
@@ -16,13 +16,13 @@ def autosave(agent, score_storage, tracker, e):
     pickle.dump(e, open("./autosave/cartpole_episode_count.p", "wb"))
     print("Autosave")
 
-def autoload(agent, score_storage, tracker):
+def autoload(agent, tracker):
     agent.load("./autosave/cartpole_weights.h5")
     score_storage = np.copy(np.load("./autosave/cartpole_score_storage.npy"))
     agent.memory = pickle.load(open("./autosave/cartpole_memory.p", 'rb'))
     e = pickle.load(open("./autosave/cartpole_episode_count.p", "rb"))
     print("Autoload, started at episode:", e)
-    return e
+    return e, score_storage
 
 if __name__ == "__main__":
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     done = False
 
     #Defines agent
-    agent = agent.Agent(state_size, action_size)
+    agent = agent.Agenxt(state_size, action_size)
     batch_size = 32
 
     #Defines best agent tracker
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # Loading autosave
     e = 0
     if load == "y":
-        e = autoload(agent, score_storage, tracker)
+        e, score_storage = autoload(agent, tracker)
 
     while e < EPISODES:
 
