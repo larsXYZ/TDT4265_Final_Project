@@ -76,6 +76,8 @@ if __name__ == "__main__":
 
                 #env.render()
 
+
+
                 #Agent performs an action
                 action = agent.act(img_buffer.get_image_array())
 

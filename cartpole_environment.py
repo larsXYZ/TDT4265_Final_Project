@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import gym
 import numpy as np
-import fully_connected_agent as agent
+import FCN_agent as agent
 import matplotlib.pyplot as plt
 import pickle
 import best_agent_tracker

@@ -10,7 +10,7 @@ def moving_average(a, n=3) :
 
 
 
-score_storage = np.copy(np.load("cartpole_score_storage.npy"))
+score_storage = np.copy(np.load("spaceinv_score_storage.npy"))
 EPISODES = np.shape(score_storage)[0]
 
 n = 20

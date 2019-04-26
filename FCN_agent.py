@@ -20,8 +20,8 @@ class Agent(object):
     #Create the model, the brain of the agent
     def create_model(self):
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Dense(units=20, input_dim=self.number_of_states, activation='relu'))
-        model.add(tf.keras.layers.Dense(units=20, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=30, input_dim=self.number_of_states, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=30, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
 

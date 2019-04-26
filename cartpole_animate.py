@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import gym
 import numpy as np
-import fully_connected_agent as agent
+import FCN_agent as agent
 import matplotlib.pyplot as plt
 import pickle
 import time
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     batch_size = 32
 
     #Loading weights
-    weight_file_name = "cartpole_weights_best.h5"
+    weight_file_name = "cartpole_weights_e490.h5"
     try:
         agent.load("./animate/"+weight_file_name)
     except:
