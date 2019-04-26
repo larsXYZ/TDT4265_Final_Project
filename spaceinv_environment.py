@@ -32,7 +32,7 @@ def autoload(agent, tracker):
     print("Autoload, started at episode:", e)
     return e, score_storage
 
-EPISODES = 300
+EPISODES = 500
 
 if __name__ == "__main__":
 
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         tracker = best_agent_tracker.Best_Agent_tracker()
 
         #Image buffer, enabling the agent to achieve a sense of time
-        BUFFER_SIZE = 3
+        BUFFER_SIZE = 4
         img_buffer = image_buffer.Image_buffer(size=BUFFER_SIZE)
 
         #Preparing environment
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
     autosave(agent, score_storage, tracker, e)
-    plt.plot( np.arange(1,EPISODES+1),score_storage)
-    plt.savefig("cnn_agent_plot")
+    #plt.plot( np.arange(1,EPISODES+1),score_storage)
+    #plt.savefig("cnn_agent_plot")

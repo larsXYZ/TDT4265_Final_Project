@@ -22,11 +22,11 @@ class Agent(object):
     #Create the model, the brain of the agent
     def create_model(self):
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=7, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
-        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=7, activation='relu'))
-        model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=7, activation='relu'))
+        model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, strides=4, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
+        model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=4, strides=2, activation='relu'))
+        #model.add(tf.keras.layers.Conv2D(filters=15, kernel_size=7, activation='relu'))
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=30, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=256, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
