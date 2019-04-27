@@ -9,11 +9,11 @@ import best_agent_tracker
 import image_buffer
 
 #Resizes the image to 84x84 and outputs a binary color image
-def preprocessing(observation):
-    observation = cv2.resize(observation, (84,84))
+def preprocessing(observation,state_size):
+    observation = cv2.resize(observation, state_size)
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
-    return np.reshape(observation, (84,84,1))
+    return np.reshape(observation, state_size+(1,))
 
 def autosave(agent, score_storage, tracker, e):
     agent.save("./autosave/spaceinv_weights.h5")
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
             #Preparing for next run
             state = env.reset()
-            state = preprocessing(state)
+            state = preprocessing(state,state_size)
             done = False
             img_buffer.reset()
             img_buffer.append(state)
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                 total_reward += reward
 
                 #Prepare next state
-                next_state = state = preprocessing(next_state)
+                next_state = state = preprocessing(next_state,state_size)
 
                 #Recording for memories
                 state_previous = img_buffer.get_image_array()

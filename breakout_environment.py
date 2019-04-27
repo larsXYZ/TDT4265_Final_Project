@@ -4,16 +4,16 @@ import cv2
 import CNN_agent as agent
 import pickle
 import sys
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import best_agent_tracker
 import image_buffer
 
 #Resizes the image to 84x84 and outputs a binary color image
-def preprocessing(observation):
-    observation = cv2.resize(observation, (84,84))
+def preprocessing(observation,state_size):
+    observation = cv2.resize(observation, state_size)
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
-    return np.reshape(observation, (84,84,1))
+    return np.reshape(observation, state_size+(1,))
 
 def autosave(agent, score_storage, tracker, e):
     agent.save("./autosave/_weights.h5")
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
         #Preparing environment
         env = gym.make('Breakout-v0')
-        state_size = (84,84)
+        state_size = (50,50)
         action_size = env.action_space.n
         batch_size = 10
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
             #Preparing for next run
             state = env.reset()
-            state = preprocessing(state)
+            state = preprocessing(state,state_size)
             done = False
             img_buffer.reset()
             img_buffer.append(state)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             total_reward = 0
             for time in range(999999999):
 
-                env.render()
+                #env.render()
 
                 #Agent performs an action
                 action = agent.act(img_buffer.get_image_array())
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                 total_reward += reward
 
                 #Prepare next state
-                next_state = state = preprocessing(next_state)
+                next_state = state = preprocessing(next_state,state_size)
 
                 #Recording for memories
                 state_previous = img_buffer.get_image_array()
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
 
 
-    except:
+    except MemoryError:
         print("EXCEPTION")
         if save == 'y':
             tracker.get_best_agent().save("./weights/breakout_weights_best.h5")

@@ -23,10 +23,17 @@ class Image_buffer(object):
 
     def get_image_array(self):
         if len(self.buffer) == self.size:
-            return np.array(self.buffer).reshape(1,self.image_x, self.image_y, self.size)
+            return np.array(self.buffer)#.reshape(1,self.image_x, self.image_y, self.size)
         else:
             print("BUFFER OTHER THAN EXPECTED")
             exit(1)
+
+    def get_frame(self, index):
+        if index >= self.size:
+            print("FRAME INDEX OUT OF BOUNDS")
+            exit(1)
+        else:
+            return np.array(self.buffer).reshape(1,self.image_x, self.image_y, index)
 
     def reset(self):
         self.buffer = []
