@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import tensorflow as tf
+from matplotlib import pyplot as plt
 from collections import deque
 
 
@@ -53,7 +54,14 @@ class Agent(object):
 
         for sample in batch:
 
-            state = (sample[0]).reshape(1,self.state_size[0],self.state_size[1],self.buffer_size)
+            #Reordering state, the neural network expects array of certain form
+            state_raw = sample[0]
+            state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
+            state[0, :, :, 0] = state_raw[0, :, :, 0]
+            state[0, :, :, 1] = state_raw[1, :, :, 0]
+            state[0, :, :, 2] = state_raw[2, :, :, 0]
+            state[0, :, :, 3] = state_raw[3, :, :, 0]
+
             action = sample[1]
             reward = sample[2]
             next_state = (sample[3]).reshape(1,self.state_size[0],self.state_size[1],self.buffer_size)
