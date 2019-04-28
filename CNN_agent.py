@@ -12,12 +12,16 @@ class Agent(object):
         self.buffer_size = buffer_size
         self.state_size = number_of_states
         self.number_of_actions = number_of_actions
-        self.learning_rate = 0.005
+        self.learning_rate = 0.01
         self.memory = deque(maxlen=200000)
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
+<<<<<<< HEAD
         self.epsilon_decay = 0.9999
+=======
+        self.epsilon_decay = 0.99999
+>>>>>>> 15a4e95f532688b984c4c509fcb7ebc4361d5fe5
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
