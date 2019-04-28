@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
 
     #Saves data in case of error
-    except MemoryError:
+    except:
         print("EXCEPTION")
         if save == 'y':
             tracker.get_best_agent().save("./weights/breakout_weights_best.h5")
