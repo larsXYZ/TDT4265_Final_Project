@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 from matplotlib import pyplot as plt
 from collections import deque
+import time
 
 
 class Agent(object):
@@ -87,7 +88,7 @@ class Agent(object):
             #Check for diverged net
             q_vector = self.model.predict(next_state)
             for i in range(self.number_of_actions):
-                if q_vector[0][i] == Nan:
+                if np.isnan(q_vector[0][i]):
                     print("Net has diverged")
                     exit(1)
                 
