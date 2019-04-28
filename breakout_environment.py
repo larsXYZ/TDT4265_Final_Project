@@ -15,19 +15,17 @@ def preprocessing(observation,state_size):
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
     return np.reshape(observation, state_size+(1,))
 
-def autosave(agent, score_storage, tracker, e):
+def autosave(agent, score_storage, e):
     agent.save("./autosave/breakout_weights.h5")
     np.save("./autosave/breakout_score_storage", score_storage)
     pickle.dump(agent.memory, open("./autosave/breakout_memory.p", "wb"))
-    #pickle.dump(tracker, open("./autosave/breakout_tracker.p", "wb"))
     pickle.dump(e, open("./autosave/breakout_episode_count.p", "wb"))
     print("Autosave")
 
-def autoload(agent, tracker):
+def autoload(agent):
     agent.load("./autosave/breakout_weights.h5")
     score_storage = np.copy(np.load("./autosave/breakout_score_storage.npy"))
     agent.memory = pickle.load(open("./autosave/breakout_memory.p", 'rb'))
-    #tracker = pickle.load(open("./autosave/breakout_tracker.p", "rb"))
     e = pickle.load(open("./autosave/breakout_episode_count.p", "rb"))
     print("Autoload, started at episode:", e)
     return e, score_storage
@@ -60,7 +58,7 @@ if __name__ == "__main__":
         #Loading autosave
         e = 0
         if load == "y":
-            e, score_storage = autoload(agent, tracker)
+            e, score_storage = autoload(agent)
 
         while e < EPISODES:
 
@@ -86,7 +84,7 @@ if __name__ == "__main__":
                 #Prepare next state
                 state = preprocessing(next_state,state_size)
                 next_state = state
-                
+
                 #Recording for memories
                 state_previous = img_buffer.get_image_array()
                 img_buffer.append(next_state)
@@ -111,7 +109,7 @@ if __name__ == "__main__":
             if save == 'y' and e % 10 == 0:
                 agent.save("./weights/breakout_weights_e" + str(e) + ".h5" )
                 tracker.get_best_agent().save("./weights/breakout_weights_best.h5")
-                autosave(agent, score_storage, tracker, e)
+                autosave(agent, score_storage, e)
 
             e += 1
 
@@ -121,13 +119,13 @@ if __name__ == "__main__":
         print("EXCEPTION")
         if save == 'y':
             tracker.get_best_agent().save("./weights/breakout_weights_best.h5")
-            autosave(agent, score_storage, tracker, e)
+            autosave(agent, score_storage, e)
         sys.exit()
 
 
     #Saving and plotting result
     agent.save("./weights/breakout_weights_final.h5")
     tracker.get_best_agent().save("./weights/breakout_weights_best.h5")
-    autosave(agent, score_storage, tracker, e)
+    autosave(agent, score_storage, e)
     #plt.plot( np.arange(1,EPISODES+1),score_storage)
     #plt.savefig("cnn_agent_plot")

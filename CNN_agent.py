@@ -12,7 +12,7 @@ class Agent(object):
         self.buffer_size = buffer_size
         self.state_size = number_of_states
         self.number_of_actions = number_of_actions
-        self.learning_rate = 0.001
+        self.learning_rate = 0.0001
         self.memory = deque(maxlen=2000)
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate

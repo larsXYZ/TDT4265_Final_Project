@@ -9,14 +9,14 @@ import best_agent_tracker
 #SOURCE https://keon.io/deep-q-learning/
 EPISODES = 20
 
-def autosave(agent, score_storage, tracker, e):
+def autosave(agent, score_storage, e):
     agent.save("./autosave/cartpole_weights.h5")
     np.save("./autosave/cartpole_score_storage", score_storage)
     pickle.dump(agent.memory, open("./autosave/cartpole_memory.p", "wb"))
     pickle.dump(e, open("./autosave/cartpole_episode_count.p", "wb"))
     print("Autosave")
 
-def autoload(agent, tracker):
+def autoload(agent):
     agent.load("./autosave/cartpole_weights.h5")
     score_storage = np.copy(np.load("./autosave/cartpole_score_storage.npy"))
     agent.memory = pickle.load(open("./autosave/cartpole_memory.p", 'rb'))
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # Loading autosave
     e = 0
     if load == "y":
-        e, score_storage = autoload(agent, tracker)
+        e, score_storage = autoload(agent)
 
     while e < EPISODES:
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
                 #Saving weights
                 if save == 'y' and e % 10 == 0:
                     agent.save("./weights/cartpole_weights_e" + str(e) + '.h5')
-                    autosave(agent, score_storage, tracker, e)
+                    autosave(agent, score_storage, e)
 
                 # Checks if this agent is best agent yet
                 tracker.update_best_agent(agent, time)
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     if save == 'y':
         agent.save("./weights/cartpole_weights_final.h5")
         tracker.get_best_agent().save("./weights/cartpole_weights_best.h5")
-        autosave(agent, score_storage, tracker, e)
+        autosave(agent, score_storage, e)
 
 
     plt.plot( np.arange(1,EPISODES+1),score_storage)
