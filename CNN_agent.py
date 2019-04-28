@@ -23,14 +23,23 @@ class Agent(object):
     #Create the model, the brain of the agent
     def create_model(self):
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=8, strides=4, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size),
-                                         kernel_regularizer=tf.keras.regularizers.l1(0.2), kernel_initializer=tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)))
+        model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=8, strides=4, activation='relu',
+                                         input_shape=(self.state_size[0],self.state_size[1],self.buffer_size),
+                                         kernel_regularizer=tf.keras.regularizers.l1(0.1),
+                                         kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
+                                         activity_regularizer=tf.keras.regularizers.l1(0.1)))
         model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=4, strides=2, activation='relu',
-                                         kernel_regularizer=tf.keras.regularizers.l1(0.2), kernel_initializer=tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)))
+                                         kernel_regularizer=tf.keras.regularizers.l1(0.1),
+                                         kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
+                                         activity_regularizer=tf.keras.regularizers.l1(0.1)))
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=256, activation='relu',
-                                         kernel_regularizer=tf.keras.regularizers.l1(0.2), kernel_initializer=tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=None)))
-        model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
+        model.add(tf.keras.layers.Dense(units=256, activation='relu', kernel_regularizer=tf.keras.regularizers.l1(0.05),
+                                        kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
+                                        activity_regularizer=tf.keras.regularizers.l1(0.05)))
+        model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear',
+                                        kernel_regularizer=tf.keras.regularizers.l1(0.05),
+                                        kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
+                                        activity_regularizer=tf.keras.regularizers.l1(0.05)))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
 
@@ -70,17 +79,25 @@ class Agent(object):
             next_state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
             for i in range(self.buffer_size):
                 state[0, :, :, i] = state_raw[i, :, :, 0]
-
+                
             action = sample[1]
             reward = sample[2]
             done = sample[4]
-
+            
+            #Check for diverged net
+            q_vector = self.model.predict(next_state)
+            for i in range(self.number_of_actions):
+                if q_vector[0][i] == Nan:
+                    print("Net has diverged")
+                    exit(1)
+                
+                
             y = reward
 
             if not done:
-                y = reward + self.gamma * np.amax(self.model.predict(next_state)[0])
+                y = reward + self.gamma * np.amax(q_vector[0])
 
-            y_pred = self.model.predict(state)
+            y_pred = q_vector
             y_pred[0][action] = y
 
             self.model.fit(state, y_pred, epochs=1, verbose=0)
