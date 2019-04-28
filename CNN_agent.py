@@ -17,7 +17,7 @@ class Agent(object):
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
-        self.epsilon_decay = 0.99999
+        self.epsilon_decay = 0.9999
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
@@ -37,9 +37,13 @@ class Agent(object):
         self.memory.append((state, action, reward, next_state, done))
 
     #Decide what to do depending on the current state
-    def act(self, state):
+    def act(self, state_raw):
 
-        state = state.reshape(1,self.state_size[0],self.state_size[1],self.buffer_size)
+        state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
+        state[0, :, :, 0] = state_raw[0, :, :, 0]
+        state[0, :, :, 1] = state_raw[1, :, :, 0]
+        state[0, :, :, 2] = state_raw[2, :, :, 0]
+        state[0, :, :, 3] = state_raw[3, :, :, 0]
 
         if random.random() < self.epsilon: #Explore
             return random.randrange(self.number_of_actions)
