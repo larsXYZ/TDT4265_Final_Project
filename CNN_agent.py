@@ -19,6 +19,7 @@ class Agent(object):
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
         self.epsilon_decay = 0.9999
+        self.l2_const = 0.05
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
@@ -26,21 +27,21 @@ class Agent(object):
         model = tf.keras.models.Sequential()
         model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=8, strides=4, activation='relu',
                                          input_shape=(self.state_size[0],self.state_size[1],self.buffer_size),
-                                         kernel_regularizer=tf.keras.regularizers.l1(0.1),
+                                         kernel_regularizer=tf.keras.regularizers.l2(self.l2_const),
                                          kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
-                                         activity_regularizer=tf.keras.regularizers.l1(0.1)))
+                                         activity_regularizer=tf.keras.regularizers.l2(self.l2_const)))
         model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=4, strides=2, activation='relu',
-                                         kernel_regularizer=tf.keras.regularizers.l1(0.1),
+                                         kernel_regularizer=tf.keras.regularizers.l2(self.l2_const),
                                          kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
-                                         activity_regularizer=tf.keras.regularizers.l1(0.1)))
+                                         activity_regularizer=tf.keras.regularizers.l2(self.l2_const)))
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=256, activation='relu', kernel_regularizer=tf.keras.regularizers.l1(0.05),
+        model.add(tf.keras.layers.Dense(units=256, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(self.l2_const),
                                         kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
-                                        activity_regularizer=tf.keras.regularizers.l1(0.05)))
+                                        activity_regularizer=tf.keras.regularizers.l2(self.l2_const)))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear',
-                                        kernel_regularizer=tf.keras.regularizers.l1(0.05),
+                                        kernel_regularizer=tf.keras.regularizers.l2(self.l2_const),
                                         kernel_initializer=tf.keras.initializers.RandomNormal(mean=0, stddev=0.05, seed=int(time.time())),
-                                        activity_regularizer=tf.keras.regularizers.l1(0.05)))
+                                        activity_regularizer=tf.keras.regularizers.l2(self.l2_const)))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
 
