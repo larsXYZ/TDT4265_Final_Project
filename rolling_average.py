@@ -9,13 +9,14 @@ def moving_average(a, n=3) :
     return ret[n - 1:] / n
 
 
-
+#Retrieving data
 score_storage = np.copy(np.load("spaceinv_score_storage.npy"))
 EPISODES = np.shape(score_storage)[0]
 
-n = 20
-score_storage_roll_av = moving_average(score_storage,n)
+#Computing moving average
+score_storage_roll_av = moving_average(score_storage,n=20)
 
+#Plotting
 plt.plot(np.arange(1, EPISODES + 1), score_storage)
 plt.show()
 

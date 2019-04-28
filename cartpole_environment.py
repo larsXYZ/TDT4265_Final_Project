@@ -8,6 +8,7 @@ import best_agent_tracker
 
 EPISODES = 20
 
+#Stores all relevant data to continue training
 def autosave(agent, score_storage, e):
     agent.save("./autosave/cartpole_weights.h5")
     np.save("./autosave/cartpole_score_storage", score_storage)
@@ -15,6 +16,7 @@ def autosave(agent, score_storage, e):
     pickle.dump(e, open("./autosave/cartpole_episode_count.p", "wb"))
     print("Autosave")
 
+#Loads all relevant data to continue training
 def autoload(agent):
     agent.load("./autosave/cartpole_weights.h5")
     score_storage = np.copy(np.load("./autosave/cartpole_score_storage.npy"))
@@ -93,13 +95,13 @@ if __name__ == "__main__":
 
 
         e += 1
-
+        
     #Creates plot and saves agent
     if save == 'y':
         agent.save("./weights/cartpole_weights_final.h5")
         tracker.get_best_agent().save("./weights/cartpole_weights_best.h5")
         autosave(agent, score_storage, e)
 
-
+    #Plotting
     plt.plot( np.arange(1,EPISODES+1),score_storage)
     plt.savefig("fnn_agent_plot")

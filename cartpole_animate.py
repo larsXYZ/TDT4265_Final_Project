@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+#The code makes an animation of CartPole from stored weights
+
 import gym
 import numpy as np
 import FCN_agent as agent
@@ -21,7 +24,7 @@ if __name__ == "__main__":
     #Loading weights
     weight_file_name = "cartpole_weights_e490.h5"
     try:
-        agent.load("./animate/"+weight_file_name)
+        agent.load("./results/CARTPOLE4/weights/"+weight_file_name)
     except:
         print("LOADING-ERROR")
         exit(1)

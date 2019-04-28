@@ -4,17 +4,18 @@ import cv2
 import CNN_agent as agent
 import pickle
 import sys
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import best_agent_tracker
 import image_buffer
 
-#Resizes the image to 84x84 and outputs a binary color image
+#Resizes the image and outputs a binary color image
 def preprocessing(observation,state_size):
     observation = cv2.resize(observation, state_size)
     observation = cv2.cvtColor(observation, cv2.COLOR_BGR2GRAY)
     ret, observation = cv2.threshold(observation, 1, 255 , cv2.THRESH_BINARY)
     return np.reshape(observation, state_size+(1,))
 
+#Stores all relevant data to continue training
 def autosave(agent, score_storage, e):
     agent.save("./autosave/spaceinv_weights.h5")
     np.save("./autosave/spaceinv_score_storage", score_storage)
@@ -22,6 +23,7 @@ def autosave(agent, score_storage, e):
     pickle.dump(e, open("./autosave/spaceinv_episode_count.p", "wb"))
     print("Autosave")
 
+#Loads all relevant data to continue training
 def autoload(agent):
     agent.load("./autosave/spaceinv_weights.h5")
     score_storage = np.copy(np.load("./autosave/spaceinv_score_storage.npy"))
@@ -115,7 +117,7 @@ if __name__ == "__main__":
             e += 1
 
 
-
+    #Saves data before exiting
     except:
         print("EXCEPTION")
         if save == 'y':
@@ -128,5 +130,5 @@ if __name__ == "__main__":
     agent.save("./weights/spaceinv_weights_final.h5")
     tracker.get_best_agent().save("./weights/spaceinv_weights_best.h5")
     autosave(agent, score_storage, e)
-    #plt.plot( np.arange(1,EPISODES+1),score_storage)
-    #plt.savefig("cnn_agent_plot")
+    plt.plot( np.arange(1,EPISODES+1),score_storage)
+    plt.savefig("cnn_agent_plot")

@@ -18,8 +18,6 @@ class VideoGenerator(object):
         assert np.shape(frame) == (self.width, self.height, self.color_depth)
         self.frame_array.append(frame)
 
-
-
     def generate_video(self, filename):
 
         fourcc = VideoWriter_fourcc(*'DIVX')
