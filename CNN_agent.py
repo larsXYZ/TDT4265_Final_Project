@@ -17,7 +17,7 @@ class Agent(object):
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
-        self.epsilon_decay = 0.99
+        self.epsilon_decay = 0.9999
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
@@ -54,7 +54,6 @@ class Agent(object):
 
         for sample in batch:
 
-            #Reordering state, the neural network expects array of certain form
             state_raw = sample[0]
             state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
             state[0, :, :, 0] = state_raw[0, :, :, 0]
@@ -62,9 +61,15 @@ class Agent(object):
             state[0, :, :, 2] = state_raw[2, :, :, 0]
             state[0, :, :, 3] = state_raw[3, :, :, 0]
 
+            next_state_raw = sample[3]
+            next_state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
+            next_state[0, :, :, 0] = next_state_raw[0, :, :, 0]
+            next_state[0, :, :, 1] = next_state_raw[1, :, :, 0]
+            next_state[0, :, :, 2] = next_state_raw[2, :, :, 0]
+            next_state[0, :, :, 3] = next_state_raw[3, :, :, 0]
+
             action = sample[1]
             reward = sample[2]
-            next_state = (sample[3]).reshape(1,self.state_size[0],self.state_size[1],self.buffer_size)
             done = sample[4]
 
 

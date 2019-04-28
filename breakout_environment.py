@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
         #Preparing environment
         env = gym.make('Breakout-v0')
-        state_size = (50,50)
+        state_size = (64,64)
         action_size = env.action_space.n
         batch_size = 10
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
@@ -84,7 +84,8 @@ if __name__ == "__main__":
                 total_reward += reward
 
                 #Prepare next state
-                next_state = state = preprocessing(next_state,state_size)
+                state = preprocessing(next_state,state_size)
+                next_state = state
 
                 #Recording for memories
                 state_previous = img_buffer.get_image_array()
