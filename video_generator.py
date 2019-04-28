@@ -2,6 +2,7 @@ from cv2 import VideoWriter, VideoWriter_fourcc
 import numpy as np
 
 #Generates video from a source array
+# Used to make videos of the Atari games
 
 class VideoGenerator(object):
 
