@@ -16,7 +16,7 @@ def preprocessing(observation,state_size):
     return np.reshape(observation, state_size+(1,))
 
 def autosave(agent, score_storage, tracker, e):
-    agent.save("./autosave/_weights.h5")
+    agent.save("./autosave/breakout_weights.h5")
     np.save("./autosave/breakout_score_storage", score_storage)
     pickle.dump(agent.memory, open("./autosave/breakout_memory.p", "wb"))
     #pickle.dump(tracker, open("./autosave/breakout_tracker.p", "wb"))
@@ -32,7 +32,7 @@ def autoload(agent, tracker):
     print("Autoload, started at episode:", e)
     return e, score_storage
 
-EPISODES = 500
+EPISODES = 1000
 
 if __name__ == "__main__":
 
@@ -47,14 +47,14 @@ if __name__ == "__main__":
         tracker = best_agent_tracker.Best_Agent_tracker()
 
         #Image buffer, enabling the agent to achieve a sense of time
-        BUFFER_SIZE = 4
+        BUFFER_SIZE = 3
         img_buffer = image_buffer.Image_buffer(size=BUFFER_SIZE)
 
         #Preparing environment
         env = gym.make('Breakout-v0')
-        state_size = (64,64)
+        state_size = (50,50)
         action_size = env.action_space.n
-        batch_size = 10
+        batch_size = 32
         agent = agent.Agent(state_size, action_size, BUFFER_SIZE)
 
         #Loading autosave
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                 #Prepare next state
                 state = preprocessing(next_state,state_size)
                 next_state = state
-
+                
                 #Recording for memories
                 state_previous = img_buffer.get_image_array()
                 img_buffer.append(next_state)

@@ -12,8 +12,8 @@ class Agent(object):
         self.buffer_size = buffer_size
         self.state_size = number_of_states
         self.number_of_actions = number_of_actions
-        self.learning_rate = 0.01
-        self.memory = deque(maxlen=200000)
+        self.learning_rate = 0.001
+        self.memory = deque(maxlen=2000)
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
@@ -24,10 +24,9 @@ class Agent(object):
     def create_model(self):
         model = tf.keras.models.Sequential()
         model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, strides=4, activation='relu', input_shape=(self.state_size[0],self.state_size[1],self.buffer_size)))
-        model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=4, strides=2, activation='relu'))
-        #model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=3, activation='relu'))
+        model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, strides=2, activation='relu'))
         model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(units=256, activation='relu'))
+        model.add(tf.keras.layers.Dense(units=128, activation='relu'))
         model.add(tf.keras.layers.Dense(units=self.number_of_actions, activation='linear'))
         model.compile(loss='mse', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
         return model
@@ -40,10 +39,8 @@ class Agent(object):
     def act(self, state_raw):
 
         state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
-        state[0, :, :, 0] = state_raw[0, :, :, 0]
-        state[0, :, :, 1] = state_raw[1, :, :, 0]
-        state[0, :, :, 2] = state_raw[2, :, :, 0]
-        state[0, :, :, 3] = state_raw[3, :, :, 0]
+        for i in range(self.buffer_size):
+            state[0, :, :, i] = state_raw[i, :, :, 0]
 
         if random.random() < self.epsilon: #Explore
             return random.randrange(self.number_of_actions)
@@ -60,17 +57,13 @@ class Agent(object):
 
             state_raw = sample[0]
             state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
-            state[0, :, :, 0] = state_raw[0, :, :, 0]
-            state[0, :, :, 1] = state_raw[1, :, :, 0]
-            state[0, :, :, 2] = state_raw[2, :, :, 0]
-            state[0, :, :, 3] = state_raw[3, :, :, 0]
+            for i in range(self.buffer_size):
+                state[0, :, :, i] = state_raw[i, :, :, 0]
 
             next_state_raw = sample[3]
             next_state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
-            next_state[0, :, :, 0] = next_state_raw[0, :, :, 0]
-            next_state[0, :, :, 1] = next_state_raw[1, :, :, 0]
-            next_state[0, :, :, 2] = next_state_raw[2, :, :, 0]
-            next_state[0, :, :, 3] = next_state_raw[3, :, :, 0]
+            for i in range(self.buffer_size):
+                state[0, :, :, i] = state_raw[i, :, :, 0]
 
             action = sample[1]
             reward = sample[2]

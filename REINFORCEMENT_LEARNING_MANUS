@@ -1,0 +1,84 @@
+Intro
+ - Group 123
+
+ - We chose the Deep Reinforcement Learning task
+
+
+Goal
+ - Our goal was to implement a Deep Q-Learning Agent with
+   experience replay similar to the one provided in Deepminds famous paper.
+
+ - We would then test this agent on various reinforcement learning environments
+   provided by OpenAI.
+
+
+Relevant literature
+
+ - The paper that made Deepmind famous. Published in december 2013 they introduced
+   Deep Reinforcement Learning using Experience replay to the world.
+    - https://arxiv.org/pdf/1312.5602v1.pdf
+
+ - We also used various internet blogs. We used some of their figures(?)
+    - https://medium.freecodecamp.org/an-introduction-to-deep-q-learning-lets-play-doom-54d02d8017d8
+    - https://sergioskar.github.io/Deep_Q_Learning/
+
+
+Method
+
+ - Normal Q-learning
+    - Uses a matrix that stores the Q-values for each action at each state. Has dimensions |A| x |S|.
+    - Updates this matrix by the Bellman function.
+    - This matrix can become VERY large for large action/state spaces.
+
+ - Estimating Q-values by Neural Network.
+    - Reduces space requirements if environment has large state space (continuous values, raw pixel input)
+    - Enables various Neural Network designs. Fully Connected vs Convolutional.
+    - As well as all the methods developed for them. Training methods (Gradient descent, Stochastic gradient descent, drop-out, normalization)
+    - If we had more time and more easily access to hardware we could explore these methods in more detail.
+
+ - Memory replay
+    - The same method as Deepmind introduced in their 2013 paper. We store state transitions, actions, and rewards in memory.
+    - During the training period we sample random batches from these and fit our network according to the Bellman function.
+    - This reduces the dependencies of our samples and ensures that the agent learns from a wide sample of situations.
+    - Improves stability
+
+
+Result 1 - Cartpole v1
+
+ - Cartpole is a very simple environment. The state consists of a 4 element vector with the cart position, cart speed, pole angle, pole 
+   angular velocity.
+ - The action space is a 2 element vector- Push cart to right or left.
+ - We used a Fully connected network consisting of three layers with 30 units each.
+ - """""""""""""""""""MAKE HYPERPARAMETERS TABLE""""""""""""""""""""""""""""""""""""""""""
+ - We trained it for 500 episodes. with a batch size of 32
+ - We observed high variance during training. (SHOW PLOTS FROM CARTPOLE4)
+ - We see that the agent performance flattened out after about 150 episodes at a score of ~300.
+ - It is worth noting that a performance of over 499 is not possible, since the environment ends
+   after 500 frames. Expecting that an agent that has made it that far is stable.
+ - SHOW VIDEO OF AGENT
+
+
+Result 2 - Atari Games
+
+ - The Atari games provide a more challenging environment. When using the raw pixel data our agent has to process a 210 x 160 RGB image.
+ - It has a action space of 6. Up, down, left, right, fire, no operation
+
+ - COMPUTATIONAL PROBLEM: To make it easier we preprocess the frames from the environment. We downsample it and convert it to greyscale.
+
+ - TEMPORAL PROBLEM: In order to give the agent a temporal sense we construct a frame buffer consisting of n-frames, which we feed to the agent.
+
+Discussion
+
+Possible improvements
+
+ - More training. Our biggest problem was lack of training. If we had more readily access to training hardware we could experiment
+                  with hyperparameters and network architectures.
+
+ - Introduce fixed Q-training. The way our training is implemented now means that the target Q-value is generated in part by our network.
+                               Our network generates its own target values! This leads to instabilities during training. Fixed Q-training
+                               introduces a secondary network that only generates the target values. This improves stability and gives
+                               fixed target weights for our network during training. Every now and then we copy the values from our
+                               primary net to the target-generating net.
+
+ - Prioritized Experience replay. Alter the sampling distribution from memory to prioritize samples where there was a big difference between 
+                                  our prediction and the target. Sampling these more frequently means training more efficiently.
