@@ -38,6 +38,7 @@ class Agent(object):
     #Decide what to do depending on the current state
     def act(self, state_raw):
 
+        #Reshapes the state array, keras expects it a certain way
         state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
         for i in range(self.buffer_size):
             state[0, :, :, i] = state_raw[i, :, :, 0]
@@ -55,11 +56,13 @@ class Agent(object):
 
         for sample in batch:
 
+            #Reshapes the state array, keras expects it a certain way
             state_raw = sample[0]
             state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
             for i in range(self.buffer_size):
                 state[0, :, :, i] = state_raw[i, :, :, 0]
 
+            #Reshapes the state array, keras expects it a certain way
             next_state_raw = sample[3]
             next_state = np.empty((1,self.state_size[0],self.state_size[1],self.buffer_size))
             for i in range(self.buffer_size):
@@ -68,7 +71,6 @@ class Agent(object):
             action = sample[1]
             reward = sample[2]
             done = sample[4]
-
 
             y = reward
 
@@ -80,6 +82,7 @@ class Agent(object):
 
             self.model.fit(state, y_pred, epochs=1, verbose=0)
 
+        #Reduces epsilon, making the agent more greedy
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 

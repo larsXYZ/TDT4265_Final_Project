@@ -21,6 +21,7 @@ Relevant literature
  - We also used various internet blogs. We used some of their figures(?)
     - https://medium.freecodecamp.org/an-introduction-to-deep-q-learning-lets-play-doom-54d02d8017d8
     - https://sergioskar.github.io/Deep_Q_Learning/
+    - https://keon.io/deep-q-learning/
 
 
 Method
@@ -69,6 +70,8 @@ Result 2 - Atari Games
 
 Discussion
 
+--------------------------------------------Insert discussion
+
 Possible improvements
 
  - More training. Our biggest problem was lack of training. If we had more readily access to training hardware we could experiment
@@ -82,3 +85,5 @@ Possible improvements
 
  - Prioritized Experience replay. Alter the sampling distribution from memory to prioritize samples where there was a big difference between 
                                   our prediction and the target. Sampling these more frequently means training more efficiently.
+
+ - Source for the two last suggestions: https://medium.freecodecamp.org/an-introduction-to-deep-q-learning-lets-play-doom-54d02d8017d8

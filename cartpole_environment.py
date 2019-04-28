@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import pickle
 import best_agent_tracker
 
-#SOURCE https://keon.io/deep-q-learning/
 EPISODES = 20
 
 def autosave(agent, score_storage, e):
