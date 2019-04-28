@@ -17,11 +17,7 @@ class Agent(object):
         self.gamma = 0.95 #Discount rate
         self.epsilon = 1.0 #Exploration rate
         self.epsilon_min = 0.1
-<<<<<<< HEAD
-        self.epsilon_decay = 0.9999
-=======
         self.epsilon_decay = 0.99999
->>>>>>> 15a4e95f532688b984c4c509fcb7ebc4361d5fe5
         self.model = self.create_model()
 
     #Create the model, the brain of the agent
